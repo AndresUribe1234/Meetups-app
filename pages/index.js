@@ -1,27 +1,33 @@
-import React, { useRef } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import MeetUpList from "./../components/meetups/MeetupList";
 
-const HomePage = () => {
-  const inputMeetUpRef = useRef();
-  const router = useRouter();
+const DUMMY_DATA = [
+  {
+    id: "m1",
+    title: "first meet up",
+    image:
+      "https://images.pexels.com/photos/3823093/pexels-photo-3823093.jpeg?auto=compress&cs=tinysrgb&w=300",
+    address: "Somewhere in the city",
+    description: "This place is in Vienna",
+  },
+  {
+    id: "m2",
+    title: "seconde meet up",
+    image:
+      "https://images.pexels.com/photos/161074/vienna-st-charles-s-church-downtown-church-161074.jpeg?auto=compress&cs=tinysrgb&w=300",
+    address: "Somewhere in the city",
+    description: "This place is in Vienna",
+  },
+];
 
-  const customMeetUpHandler = function () {
-    const inputMeetUpEnteredValue = inputMeetUpRef.current.value;
-    console.log(inputMeetUpEnteredValue);
-    router.push(`/${inputMeetUpEnteredValue}`);
-  };
-
-  return (
-    <React.Fragment>
-      <h1>Home Page</h1>
-      <Link href={"/new-meetup"}>New meet up</Link>
-      <div>
-        <input ref={inputMeetUpRef}></input>
-        <button onClick={customMeetUpHandler}>Go to meetup</button>
-      </div>
-    </React.Fragment>
-  );
+const HomePage = (props) => {
+  return <MeetUpList meetups={props.meetups} />;
 };
+
+export async function getStaticProps() {
+  return {
+    props: { meetups: DUMMY_DATA },
+    revalidate: 60,
+  };
+}
 
 export default HomePage;

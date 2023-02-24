@@ -1,10 +1,14 @@
 import React from "react";
 import Link from "next/link";
+import NewMeetUpForm from "./../../components/meetups/NewMeetupForm";
 
 const NewMeetUp = () => {
+  const addMeetUpHandler = (newMeetUpData) => {
+    console.log(newMeetUpData);
+  };
   return (
     <React.Fragment>
-      <h1>New Meet Up Page</h1>
+      <NewMeetUpForm onAddMeetup={addMeetUpHandler} />
       <Link href="/">Back</Link>
     </React.Fragment>
   );
