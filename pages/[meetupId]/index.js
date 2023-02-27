@@ -1,40 +1,57 @@
 import React from "react";
 import Link from "next/link";
 import MeetupDetail from "../../components/meetups/MeetupDetail";
+import { MongoClient, ObjectId } from "mongodb";
 
 function MeetUpId(props) {
-  const { meetupData } = props;
-  console.log(meetupData);
+  const { meetupDataById } = props;
+  console.log(props);
 
   return (
     <React.Fragment>
-      <MeetupDetail meetupsData={meetupData} />
+      <MeetupDetail meetupsData={meetupDataById} />
       <Link href="/">Back</Link>
     </React.Fragment>
   );
 }
 
+const DB = process.env.DATABASE.replace(
+  "<PASSWORD>",
+  process.env.DATABASE_PASSWORD
+).replace("<DBNAME>", process.env.DATABASE_NAME);
+
 export async function getStaticPaths() {
+  const client = await MongoClient.connect(DB);
+  const db = client.db();
+  const eventsCollection = db.collection("events");
+  const results = await eventsCollection.find({}, { _id: 1 }).toArray();
+  client.close();
+
   return {
     fallback: false,
-    paths: [{ params: { meetupId: "m1" } }, { params: { meetupId: "m2" } }],
+    paths: results.map((ele) => ({ params: { meetupId: ele._id.toString() } })),
   };
 }
 
 export async function getStaticProps(context) {
   const meetupId = context.params.meetupId;
-  console.log(context);
   console.log(meetupId);
-  console.log("log from static");
+  const client = await MongoClient.connect(DB);
+  const db = client.db();
+  const eventsCollection = db.collection("events");
+  const result = await eventsCollection.findOne({
+    _id: new ObjectId(meetupId),
+  });
+  console.log("hello world");
+  client.close(result);
   return {
     props: {
-      meetupData: {
-        image:
-          "https://images.pexels.com/photos/11932418/pexels-photo-11932418.jpeg?auto=compress&cs=tinysrgb&w=300",
-        id: meetupId,
-        title: "Example title",
-        address: "random address",
-        description: "somewhere in Vienna",
+      meetupDataById: {
+        id: result._id.toString(),
+        title: result.title,
+        image: result.image,
+        address: result.address,
+        description: result.description,
       },
     },
   };
