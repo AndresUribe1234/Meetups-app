@@ -5,7 +5,6 @@ import { MongoClient, ObjectId } from "mongodb";
 
 function MeetUpId(props) {
   const { meetupDataById } = props;
-  console.log(props);
 
   return (
     <React.Fragment>
@@ -28,22 +27,21 @@ export async function getStaticPaths() {
   client.close();
 
   return {
-    fallback: false,
+    fallback: "blocking",
     paths: results.map((ele) => ({ params: { meetupId: ele._id.toString() } })),
   };
 }
 
 export async function getStaticProps(context) {
   const meetupId = context.params.meetupId;
-  console.log(meetupId);
+
   const client = await MongoClient.connect(DB);
   const db = client.db();
   const eventsCollection = db.collection("events");
   const result = await eventsCollection.findOne({
     _id: new ObjectId(meetupId),
   });
-  console.log("hello world");
-  client.close(result);
+
   return {
     props: {
       meetupDataById: {

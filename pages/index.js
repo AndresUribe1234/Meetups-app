@@ -1,8 +1,18 @@
 import MeetUpList from "./../components/meetups/MeetupList";
 import { MongoClient } from "mongodb";
+import Head from "next/head";
+import React from "react";
 
 const HomePage = (props) => {
-  return <MeetUpList meetups={props.meetups} />;
+  return (
+    <React.Fragment>
+      <Head>
+        <title>React Meetups</title>
+        <meta name="description" content="Browse a list of meetups." />
+      </Head>
+      <MeetUpList meetups={props.meetups} />
+    </React.Fragment>
+  );
 };
 
 const DB = process.env.DATABASE.replace(
